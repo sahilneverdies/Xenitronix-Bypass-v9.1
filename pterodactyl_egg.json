@@ -1,0 +1,62 @@
+{
+  "_comment": "Xenitronix Bypass v9.1 — Pterodactyl Egg",
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "exported_at": "2026-05-24T00:00:00+00:00",
+  "name": "Xenitronix Bypass v9.1",
+  "author": "devsahil@xenitronix",
+  "description": "Xenitronix Bypass v9.1 — HTTPS MITM Proxy with TLS interception, UID checking and Discord bot. Port: 2039.",
+  "features": ["eula"],
+  "docker_images": {
+    "ghcr.io/pterodactyl/yolks:rust_1": "ghcr.io/pterodactyl/yolks:rust_1"
+  },
+  "file_denylist": [],
+  "startup": "./xenitronix",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"[PROXY] Listening on\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\r\n# ─────────────────────────────────────────────────────────────\r\n# Xenitronix Bypass v9.1 — Pterodactyl Install Script\r\n# ─────────────────────────────────────────────────────────────\r\n\r\nset -e\r\n\r\napt-get update -y\r\napt-get install -y curl unzip build-essential cmake pkg-config libssl-dev git\r\n\r\n# Install Rust if not present\r\nif ! command -v cargo &> /dev/null; then\r\n  echo \"[*] Installing Rust...\"\r\n  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y\r\n  source \"$HOME/.cargo/env\"\r\nelse\r\n  source \"$HOME/.cargo/env\"\r\n  echo \"[*] Rust already installed: $(rustc --version)\"\r\nfi\r\n\r\n# If source zip was uploaded, extract it\r\nif [ -f /mnt/server/xenitronix_src.zip ]; then\r\n  echo \"[*] Extracting source...\"\r\n  cd /mnt/server\r\n  unzip -o xenitronix_src.zip -d /tmp/xenitronix_build\r\n  SRC_DIR=$(find /tmp/xenitronix_build -name 'Cargo.toml' -maxdepth 3 | head -1 | xargs dirname)\r\n  echo \"[*] Building release binary from $SRC_DIR...\"\r\n  cd \"$SRC_DIR\"\r\n  cargo build --release\r\n  cp target/release/xenitronix /mnt/server/xenitronix\r\n  chmod +x /mnt/server/xenitronix\r\n  rm -rf /tmp/xenitronix_build\r\n  echo \"[+] Build complete!\"\r\nelse\r\n  echo \"[!] No source zip found.\"\r\n  echo \"    Upload xenitronix_src.zip to the server files via the panel\"\r\n  echo \"    then reinstall, OR upload a pre-compiled 'xenitronix' Linux binary.\"\r\nfi\r\n\r\n# Create default .env if missing\r\nif [ ! -f /mnt/server/.env ]; then\r\n  cat > /mnt/server/.env << 'ENVEOF'\r\nDISCORD_TOKEN=\r\nRUST_LOG=info\r\nENVEOF\r\n  echo \"[+] Default .env created — fill in DISCORD_TOKEN via File Manager\"\r\nfi\r\n\r\necho \"\"\r\necho \"══════════════════════════════════════════\"\r\necho \"  Xenitronix Install Complete\"\r\necho \"══════════════════════════════════════════\"\r\necho \"  Next steps:\"\r\necho \"  1. Upload mitmproxy-ca.pem via File Manager\"\r\necho \"  2. Set DISCORD_TOKEN in .env\"\r\necho \"  3. Start the server\"\r\necho \"══════════════════════════════════════════\"",
+      "container": "ghcr.io/pterodactyl/installers:debian",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Discord Token",
+      "description": "Your Discord bot token. Leave blank to disable the bot.",
+      "env_variable": "DISCORD_TOKEN",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "nullable|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Log Level",
+      "description": "Logging verbosity: info, debug, warn, trace",
+      "env_variable": "RUST_LOG",
+      "default_value": "info",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:info,debug,warn,trace",
+      "field_type": "text"
+    },
+    {
+      "name": "Proxy Port",
+      "description": "HTTPS MITM proxy port. Must match what the C# installer sets (default: 2039).",
+      "env_variable": "PROXY_PORT_NOTE",
+      "default_value": "2039",
+      "user_viewable": true,
+      "user_editable": false,
+      "rules": "required|string",
+      "field_type": "text"
+    }
+  ]
+}
