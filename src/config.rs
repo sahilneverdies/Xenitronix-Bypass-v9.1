@@ -14,97 +14,12 @@
 /// 2-byte patterns are skipped on packets ≥ 150 bytes.
 pub static BOOL_PATCHES: &[(&[u8], &[u8], &str)] = &[
     // MatchmakingSussNtf (CMD 33601)
-    (&[0xb0, 0x01, 0x01], &[0xb0, 0x01, 0x00], "MatchmakingSussNtf.is_in_emulator_pool (F22)"),
-    (&[0x70, 0x01],       &[0x70, 0x00],        "MatchmakingSussNtf.is_in_special_pool (F14)"),
-
-    // Telemetry / MMTotalTime
-    (&[0xd0, 0x03, 0x01], &[0xd0, 0x03, 0x00], "MMTotalTime.is_cs_special_pool (F58)"),
-
-    // GroupInfo / RoomInfo
-    (&[0x90, 0x01, 0x01], &[0x90, 0x01, 0x00], "RoomBasicInfo.enable_emulator_check (F18)"),
-    (&[0x98, 0x01, 0x01], &[0x98, 0x01, 0x00], "RoomInfo.enable_emulator_check (F19)"),
-
-    // GroupMemberInfo — hides PC icon
-    (&[0xc8, 0x01, 0x01], &[0xc8, 0x01, 0x00], "GroupMemberInfo.is_emulator (F25)"),
-
-    // MatchAccountStats
-    (&[0xa8, 0x14, 0x01], &[0xa8, 0x14, 0x00], "MatchAccountStats.is_emulator (F325)"),
-
-    // MatchmakingPlayer Flags
-    (&[0x48, 0x01], &[0x48, 0x00], "MatchmakingPlayer.emulator_score (F9)"),
-    (&[0x68, 0x03], &[0x68, 0x01], "MatchmakingPlayer.plat_id: PC->Android (F13)"),
-    (&[0x30, 0x01], &[0x30, 0x00], "MatchmakingPlayer.is_hacker (F6)"),
-
-    // MajorLoginRes
-    (&[0x60, 0x01], &[0x60, 0x00], "MajorLoginRes.emulator_score=1->0 (F12)"),
-    (&[0x60, 0x02], &[0x60, 0x00], "MajorLoginRes.emulator_score=2->0 (F12)"),
-    (&[0x60, 0x03], &[0x60, 0x00], "MajorLoginRes.emulator_score=3->0 (F12)"),
-
-    // Admin & Debug Flags
-    (&[0x40, 0x01],       &[0x40, 0x00],       "AdminDebugMatchmaking.is_emulator (F8)"),
-    (&[0x60, 0x01],       &[0x60, 0x00],       "EventReport.is_emulator (F12)"),
-    (&[0x80, 0x06, 0x01], &[0x80, 0x06, 0x00], "EventReport.is_emulator (F96)"),
-
-    // FFAntiConfig / AntiHack Center Flags
-    (&[0x10, 0x01], &[0x10, 0x00], "FFAntiConfig.enable (F2)"),
-    (&[0x18, 0x01], &[0x18, 0x00], "FFAntiConfig.hpe_enable (F3)"),
-    (&[0x20, 0x01], &[0x20, 0x00], "FFAntiConfig.ffi_enable (F4)"),
-    (&[0x28, 0x01], &[0x28, 0x00], "FFAntiConfig.mtp_lite_data_enable (F5)"),
-    (&[0x30, 0x01], &[0x30, 0x00], "FFAntiConfig.ffm_enable (F6)"),
-    (&[0x38, 0x01], &[0x38, 0x00], "FFAntiConfig.ffo_enable (F7)"),
-
-    // Environment/OS Platform ID
-    (&[0x80, 0x01, 0x03], &[0x80, 0x01, 0x01], "system_platform: PC->Android (F16)"),
-    (&[0x68, 0x03],       &[0x68, 0x01],       "system_platform: PC->Android (F13)"),
-    (&[0x28, 0x03],       &[0x28, 0x01],       "system_platform: PC->Android (F5)"),
-    (&[0x20, 0x03],       &[0x20, 0x01],       "system_platform: PC->Android (F4)"),
-    (&[0x10, 0x03],       &[0x10, 0x01],       "system_platform: PC->Android (F2)"),
-    (&[0x08, 0x03],       &[0x08, 0x01],       "system_platform: PC->Android (F1)"),
+   Dm me on discord to get bool patchs and start this repo and follow on github
 ];
 
 /// String/text patches. Replacement is always padded to match the original length with spaces.
 pub static STRING_PATCHES: &[(&[u8], &[u8])] = &[
-    // Telemetry log fields
-    (b"is_emulator=1",          b"is_emulator=0"),
-    (b"is_emulator:1",          b"is_emulator:0"),
-    (b"\"is_emulator\":true",   b"\"is_emulator\":null"),
-    (b"\"is_emulator\":1",      b"\"is_emulator\":0"),
-
-    // CPU / Architecture
-    (b"x86_64",   b"arm64-v"),
-    (b"x86",      b"arm"),
-    (b"Intel(R)", b"Qualcomm"),
-    (b"Intel",    b"Qualcm"),
-    (b"AMD ",     b"Snap"),
-
-    // Emulator names
-    (b"Nox",        b"Red"),
-    (b"BlueStacks", b"XiaomiMI  "),
-    (b"Google",     b"Xiaomi"),
-    (b"VirtualBox", b"XiaomiVB  "),
-    (b"vbox",       b"qcom"),
-    (b"Genymotion", b"GooglePixel"),
-
-    // UTF-16 emulator names (BlueStacks)
-    (
-        b"B\x00l\x00u\x00e\x00S\x00t\x00a\x00c\x00k\x00s\x00",
-        b"X\x00i\x00a\x00o\x00m\x00i\x00M\x00I\x00 \x00 \x00",
-    ),
-    (
-        b"G\x00o\x00o\x00g\x00l\x00e\x00",
-        b"X\x00i\x00a\x00o\x00m\x00i\x00",
-    ),
-
-    // GPU / Graphics
-    (b"Direct3D", b"Adreno  "),
-    (b"OpenGL",   b"Mali-G"),
-
-    // Device identity
-    (b"SM-G950F", b"2412DPC0AG"),
-
-    // UI strings
-    (b"isEmulatorPool: ",    b"isEmulatorPool: 0"),
-    (b"target is emulator",  b"target is phone   "),
+ 
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -113,12 +28,7 @@ pub static STRING_PATCHES: &[(&[u8], &[u8])] = &[
 
 /// TCP/UDP port ranges captured by WinDivert and relayed by the proxy.
 pub const GAME_PORT_RANGES: &[(u16, u16)] = &[
-    (6000,  8000),
-    (10000, 10020),
-    (12000, 13000),
-    (27010, 27030),
-    (39000, 39999),
-    (49990, 50010),
+
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -196,24 +106,5 @@ dd35111a003f524437bdcbe10b3e60b7d442f39666ad7916c784160be8df";
 // ═══════════════════════════════════════════════════════════════
 
 pub const WINDIVERT_FILTER: &str = concat!(
-    "(outbound and (",
-        "(tcp.DstPort >= 6000 and tcp.DstPort <= 8000) or ",
-        "(tcp.DstPort >= 10000 and tcp.DstPort <= 10020) or ",
-        "(tcp.DstPort >= 12000 and tcp.DstPort <= 13000) or ",
-        "(tcp.DstPort >= 27010 and tcp.DstPort <= 27030) or ",
-        "(tcp.DstPort >= 39000 and tcp.DstPort <= 39999) or ",
-        "(tcp.DstPort >= 49990 and tcp.DstPort <= 50010) or ",
-        "(udp.DstPort >= 10000 and udp.DstPort <= 10020) or ",
-        "(udp.DstPort >= 27010 and udp.DstPort <= 27030) or ",
-        "(udp.DstPort >= 39000 and udp.DstPort <= 39999) or ",
-        "(udp.DstPort >= 49990 and udp.DstPort <= 50010)",
-    ")) or ",
-    "(inbound and (",
-        "(tcp.SrcPort >= 6000 and tcp.SrcPort <= 8000) or ",
-        "(tcp.SrcPort >= 10000 and tcp.SrcPort <= 10020) or ",
-        "(tcp.SrcPort >= 12000 and tcp.SrcPort <= 13000) or ",
-        "(tcp.SrcPort >= 27010 and tcp.SrcPort <= 27030) or ",
-        "(tcp.SrcPort >= 39000 and tcp.SrcPort <= 39999) or ",
-        "(tcp.SrcPort >= 49990 and tcp.SrcPort <= 50010)",
-    "))"
+   
 );
